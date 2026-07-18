@@ -41,15 +41,23 @@ def find_matches(categories, keywords):
 
 
 def main():
+    print("Starting Home Depot Daily Deals check...")
+
     categories = get_categories()
 
+    print(f"Found categories: {categories}")
+
     previous = load_previous_categories()
+
+    print(f"Previous categories: {previous}")
 
     if categories == previous:
         print("No changes today.")
         return
 
     matches = find_matches(categories, load_keywords())
+
+    print(f"Keyword matches: {matches}")
 
     send_notification(categories, matches)
 
