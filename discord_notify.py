@@ -1,33 +1,39 @@
 import os
+from datetime import datetime
+
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
 
 def send_notification(categories, matching_keywords=None):
-    webhook_url = os.environ["DISCORD_WEBHOOK"]
-
-    webhook = DiscordWebhook(url=webhook_url)
+    webhook = DiscordWebhook(url=os.environ["DISCORD_WEBHOOK"])
 
     embed = DiscordEmbed(
         title="🟧 Home Depot Daily Deals",
-        description="Today's featured categories",
-        color="F96302",  # Home Depot orange
+        color="F96302"
     )
 
-    for category in categories:
-        embed.add_embed_field(
-            name="",
-            value=f"• {category}",
-            inline=False,
-        )
+    embed.set_description(
+        f"**{datetime.now().strftime('%A, %B %d, %Y')}**"
+    )
+
+    embed.add_embed_field(
+        name="Today's Featured Categories",
+        value="\n".join(f"• {c}" for c in categories),
+        inline=False,
+    )
 
     if matching_keywords:
         embed.add_embed_field(
-            name="🔥 Watch List Match",
-            value="\n".join(f"• {k}" for k in matching_keywords),
+            name="🔥 Watch List Matches",
+            value="\n".join(f"• {m}" for m in matching_keywords),
             inline=False,
         )
 
-    embed.set_footer(text="https://www.homedepot.com/daily-deals")
+    embed.add_embed_field(
+        name="Link",
+        value="https://www.homedepot.com/daily-deals",
+        inline=False,
+    )
 
     webhook.add_embed(embed)
     webhook.execute()
