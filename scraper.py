@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 
 
 def get_categories():
-
     headers = {
         "User-Agent": (
             "Mozilla/5.0 "
@@ -24,22 +23,29 @@ def get_categories():
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    promo = soup.select_one(
-        '[data-testid="special-buy-promos"]'
-    )
+    promo = soup.select_one('[data-testid="special-buy-promos"]')
 
     if promo is None:
-        raise Exception(
-            "Couldn't find the Daily Deals ribbon."
-        )
+        raise Exception("Couldn't find the Daily Deals ribbon.")
 
     categories = []
+    seen = set()
 
     for button in promo.select("button"):
-
         text = button.get_text(" ", strip=True)
 
-        if text:
-            categories.append(text)
+        # Ignore junk
+        if not text:
+            continue
+
+        if text == "Add to Cart":
+            continue
+
+        # Remove duplicates
+        if text in seen:
+            continue
+
+        seen.add(text)
+        categories.append(text)
 
     return categories
